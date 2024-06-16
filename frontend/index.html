@@ -13,20 +13,20 @@
 	<title> Smart Cook Book </title>
 </head>
 
-<body>
+<body class="bg-cyan-600 text-white">
 	<!-- vue app div -->
-	<div id="app" class="container mx-auto text-xl">
+	<div id="app" class="container mx-auto my-4">
 		<!-- app description -->
-		<div v-bind:class="[roundedBox, 'text-2xl text-center bg-indigo-500']">
-			<h1 class="font-bold"> Smart Cook Book </h1>
-			<p> Manage your favorite recipes and create new ones with just a few clicks! </p>
+		<div class="text-center">
+			<h1 class="font-bold text-2xl"> Smart Cook Book </h1>
+			<p v-bind:class="captionText"> Manage your favorite recipes and create new ones with just a few clicks! </p>
 		</div>
 
 		<!-- choose recipe category -->
-		<div v-bind:class="[roundedBox, 'flex flex-row text-center']">
+		<div class="flex flex-row text-center">
 			<!-- recipe categories dropdown -->
-			<div class="basis-1/3 py-3 px-4">
-				<label class="font-bold block" for="recipecategories"> Find recipe category </label>
+			<div class="basis-1/3">
+				<label v-bind:class="[captionText, 'block']" for="recipecategories"> Find recipe category: </label>
 				<select 
 					name="recipecategories" 
 					id="recipecategories" 
@@ -45,17 +45,26 @@
 				</select>
 			</div>
 			<!-- recipe category details -->
-			<div class="basis-2/3 py-3 px-4" v-if="selectedRecipeCategory != null && selectedRecipeCategory.hasOwnProperty('description')">
+			<div class="basis-2/3 py-5" v-if="selectedRecipeCategory != null && selectedRecipeCategory.hasOwnProperty('description')">
 				{{ selectedRecipeCategory.description }}
 			</div>
 		</div>
 
 		<!-- move on to next steps if recipe category selected -->
-		<div v-if="selectedRecipeCategory != null" v-bind:class="roundedBox">
+		<div v-if="selectedRecipeCategory != null">
 			<!-- choose recipe -->
 			<div class="text-center" v-show="(!createMode) && (!editMode)">
+				<!-- create new recipe button -->
+				<button 
+					type="button" 
+					v-on:click="startCreateMode" 
+					v-bind:disabled="editMode || createMode"
+					v-bind:class="[btnRounded, btnGreen, btnDisabled, 'my-2']"
+				> 
+					Create new
+				</button>
 				<!-- recipes dropdown -->
-				<label class="font-bold block" for="recipes"> Find recipe </label>
+				<label v-bind:class="captionText" for="recipes"> or find recipe: </label>
 				<select 
 					name="recipes" 
 					id="recipes" 
@@ -72,42 +81,31 @@
 						{{ recipe.hasOwnProperty('name') ? recipe.name : recipe }}
 					</option>
 				</select>
-				<span class="block font-bold"> 
-					or
-				</span>
-				<!-- create new recipe button -->
-				<button 
-					type="button" 
-					v-on:click="startCreateMode" 
-					v-bind:disabled="editMode || createMode"
-					v-bind:class="[btnRounded, btnGreen, btnDisabled]"
-				> 
-					Create new recipe
-				</button>
 			</div>
 			<!-- notify about current mode -->
-			<span class="text-center block font-bold" v-if="createMode || editMode">
+			<span class="text-center block font-bold text-xl text-yellow-500" v-if="createMode || editMode">
 				{{ createMode ? 'You are creating a new recipe' : `You are editing the recipe: "${selectedRecipe.name}"` }}
 			</span>
 			
 			<!-- new recipe name -->
 			<div v-if="editMode || createMode">
-				<h4> Recipe name: 
-					<input 
-						type="text" 
-						name="recipename" 
-						id="recipename" 
-						v-model="newRecipeName"
-						v-bind:class="textInput"
-					>
-				</h4>
+				<label for="recipetime" v-bind:class="captionText"> 
+					Recipe name: 
+				</label> 
+				<input 
+					type="text" 
+					name="recipename" 
+					id="recipename" 
+					v-model="newRecipeName"
+					v-bind:class="dropDown"
+				>
 			</div>
 
 			<!-- recipe details -->
 			<div v-if="selectedRecipe != null">
 				<!-- preparation time -->
 				<div v-if="selectedRecipe.hasOwnProperty('time_minutes')">
-					<label for="recipetime" class="font-bold"> 
+					<label for="recipetime" v-bind:class="captionText"> 
 						Time (minutes): 
 					</label>
 					<span v-if="(!editMode) && (!createMode)"> 
@@ -122,144 +120,125 @@
 						id="recipetime" 
 						v-on:keypress="blockNonIntegerKeys"
 						v-model="newRecipeTime"
-						v-bind:class="textInput"
+						v-bind:class="dropDown"
 					>
 				</div>
-				<!-- ingredients list -->
-				<div v-if="selectedRecipe.hasOwnProperty('recipe_ingredients')" v-bind:class="roundedBox">
-					<h4 class="font-bold"> Ingredients: </h4>
-					<ul v-bind:class="unorderedList">
-						<!-- single ingredient -->
-						<li 
-							v-for="ingredient in selectedRecipe.recipe_ingredients" 
-							v-show="ingredient.hasOwnProperty('food_item')"
-						>
-							<!-- delete ingredient button -->
-							<button 
-								type="button" 
-								v-show="editMode || createMode" 
-								v-on:click="deleteRecipeIngredient(ingredient.food_item)"
-								v-bind:class="[btnRounded, btnRose, btnDisabled]"
-							> 
-								Delete ingredient 
-							</button>
-							<!-- ingredient information -->
-							{{ 
-								`
-								${ingredient.hasOwnProperty('amount') ? ingredient.amount : ""}  
-								${ingredient.hasOwnProperty('unit') ? ingredient.unit : ""}
-								${ingredient.hasOwnProperty('food_item') ? ingredient.food_item : ""}
-								` 
-							}}
-						</li>
-						<!-- optional ingredient to create -->
-						<li v-if="editMode || createMode" v-bind:class="[roundedBox, 'flex flex-col items-end']">
-							<!-- provide amount -->
-							<input
-								v-on:keypress="blockNonNumericKeys"
-								type="number" 
-								min="0" 
-								step="0.01" 
-								name="amount" 
-								id="amount" 
-								v-model="amount"
-								placeholder="Enter amount"
-								v-bind:class="textInput"
-							>
-							<!-- choose food category -->
-							<select 
-								name="foodcategories" 
-								id="foodcategories" 
-								v-model="selectedFoodCategory"
-								v-bind:class="dropDown"
-							>
-								<!-- prompt - default not selectable option -->
-								<option v-bind:value="null" disabled selected>
-									Select food category
-								</option>
-								<!-- food categories -->
-								<option v-bind:value="foodCategory" v-for="foodCategory in foodCategories">
-									{{ foodCategory.hasOwnProperty('name') ? foodCategory.name : foodCategory }}
-								</option>
-							</select>
-							<!-- choose food item -->
-							<select 
-								name="fooditems" 
-								id="fooditems" 
-								v-if="selectedFoodCategory != null" 
-								v-model="selectedFoodItem"
-								v-bind:class="dropDown"
-							>
-								<!-- prompt - default not selectable option -->
-								<option v-bind:value="null" disabled selected>
-									Select food item
-								</option>
-								<!-- food items from api -->
-								<option v-bind:value="foodItem" v-for="foodItem in foodItems">
-									{{ foodItem.hasOwnProperty('name') ? foodItem.name : foodItem }}
-								</option>
-							</select>
-							<!-- choose unit -->	
-							<select 
-								name="units" 
-								id="units" 
-								v-model="selectedUnit"
-								v-bind:class="dropDown"
-							>
-								<!-- prompt - default not selectable option -->
-								<option v-bind:value="null" disabled selected>
-									Select unit
-								</option>
-								<!-- units from api -->
-								<option v-bind:value="unit" v-for="unit in units">
-									{{ unit.hasOwnProperty('name') ? unit.name : unit }}
-								</option>
-							</select>		
-							<!-- add ingredient button -->
-							<button 
-								type="button" 
-								v-bind:disabled="!isIngredientToAddReady" 
-								v-on:click="addRecipeIngredient"
-								v-bind:class="[btnRounded, btnGreen, btnDisabled]"
-							> 
-								Add ingredient 
-							</button>	
-						</li>
-					</ul>
-				</div>
 
-				<!-- toggle shopping list visibility button -->
-				<button 
-					type="button" 
-					v-on:click="isShoppingListVisible = !isShoppingListVisible"
-					v-bind:class="[btnRounded, btnBlue, btnDisabled]"
-					v-show="(!editMode) && (!createMode)"
-				> 
-					{{ `${isShoppingListVisible ? "Hide" : "Show"} shopping list` }} 
-				</button>
-			
-				<!-- ingredients shopping list -->
+				<!-- ingredients list and shopping list-->
 				<div 
 					v-if="selectedRecipe.hasOwnProperty('recipe_ingredients')" 
-					v-show="(!editMode) && (!createMode) && isShoppingListVisible"
-					v-bind:class="roundedBox"
+					class="flex flex-row"
 				>
-					<h4 class="font-bold"> Shopping list: </h4>
-					<!-- mark found ingredients -->
-					<div class='flex flex-row'>
-						<div 
-							v-for="found in [false, true]" 
-							v-bind:class="[roundedBox, 'basis-1/2']">
-							<h4 class="font-bold text-center"> 
-								{{ (found ? "Found" : "Not found") + ":" }} 
-							</h4>
+					<div class="basis-1/2 py-3 px-4">
+						<h4 v-bind:class="captionText"> Ingredients: </h4>
+						<ul v-bind:class="unorderedList">
+							<!-- single ingredient -->
+							<li 
+								v-for="ingredient in selectedRecipe.recipe_ingredients" 
+								v-show="ingredient.hasOwnProperty('food_item')"
+							>
+								<!-- delete ingredient button -->
+								<button 
+									type="button" 
+									v-show="editMode || createMode" 
+									v-on:click="deleteRecipeIngredient(ingredient.food_item)"
+									v-bind:class="[btnRounded, btnRose, btnDisabled]"
+								> 
+									Delete ingredient 
+								</button>
+								<!-- ingredient information -->
+								{{ 
+									`
+									${ingredient.hasOwnProperty('amount') ? ingredient.amount : ""}  
+									${ingredient.hasOwnProperty('unit') ? ingredient.unit : ""}
+									${ingredient.hasOwnProperty('food_item') ? ingredient.food_item : ""}
+									` 
+								}}
+							</li>
+							<!-- optional ingredient to create -->
+							<li v-if="editMode || createMode" class="marker:text-white/50">
+								<!-- add ingredient button -->
+								<button 
+									type="button" 
+									v-bind:disabled="!isIngredientToAddReady" 
+									v-on:click="addRecipeIngredient"
+									v-bind:class="[btnRounded, btnGreen, btnDisabled, 'my-2']"
+								> 
+									Add new ingredient 
+								</button>
+								<!-- provide amount -->
+								<input
+									v-on:keypress="blockNonNumericKeys"
+									type="number" 
+									min="0" 
+									step="0.01" 
+									name="amount" 
+									id="amount" 
+									v-model="amount"
+									placeholder="Enter amount"
+									v-bind:class="dropDown"
+								>
+								<!-- choose food category -->
+								<select 
+									name="foodcategories" 
+									id="foodcategories" 
+									v-model="selectedFoodCategory"
+									v-bind:class="dropDown"
+								>
+									<!-- prompt - default not selectable option -->
+									<option v-bind:value="null" disabled selected>
+										Select food category
+									</option>
+									<!-- food categories -->
+									<option v-bind:value="foodCategory" v-for="foodCategory in foodCategories">
+										{{ foodCategory.hasOwnProperty('name') ? foodCategory.name : foodCategory }}
+									</option>
+								</select>
+								<!-- choose food item -->
+								<select 
+									name="fooditems" 
+									id="fooditems" 
+									v-if="selectedFoodCategory != null" 
+									v-model="selectedFoodItem"
+									v-bind:class="dropDown"
+								>
+									<!-- prompt - default not selectable option -->
+									<option v-bind:value="null" disabled selected>
+										Select food item
+									</option>
+									<!-- food items from api -->
+									<option v-bind:value="foodItem" v-for="foodItem in foodItems">
+										{{ foodItem.hasOwnProperty('name') ? foodItem.name : foodItem }}
+									</option>
+								</select>
+								<!-- choose unit -->	
+								<select 
+									name="units" 
+									id="units" 
+									v-model="selectedUnit"
+									v-bind:class="dropDown"
+								>
+									<!-- prompt - default not selectable option -->
+									<option v-bind:value="null" disabled selected>
+										Select unit
+									</option>
+									<!-- units from api -->
+									<option v-bind:value="unit" v-for="unit in units">
+										{{ unit.hasOwnProperty('name') ? unit.name : unit }}
+									</option>
+								</select>			
+							</li>
+						</ul>
+					</div>
+					<!-- ingredients shopping list -->
+					<div class="basis-1/2 py-3 px-4" v-show="(!editMode) && (!createMode)">
+						<h4 v-bind:class="captionText"> Shopping list: </h4>
+						<!-- mark found ingredients -->
+						<div>
 							<!-- list of food categories groups and recipe ingredients -->
 							<ul class="list-none">
 								<!-- single food category -->
-								<li 
-									v-for="foodCategory in shoppingListCategories" 
-									v-show="foodCategory.recipe_ingredients.some(i => ((!i.Found && !found) || (i.Found && found)))"
-								> 
+								<li v-for="foodCategory in shoppingListCategories"> 
 									<!-- food category name -->
 									<span class="font-bold">
 										{{ `${foodCategory.hasOwnProperty('food_category') ? foodCategory.food_category : ""}` + ":" }}
@@ -268,16 +247,14 @@
 									<ul v-if="foodCategory.hasOwnProperty('recipe_ingredients')" class="list-none">
 										<!-- single recipe ingredient -->
 										<li v-for="ingredient in foodCategory.recipe_ingredients"
-											v-bind:style="{'text-decoration' : found ? 'line-through' : 'none'}" 
-											v-show="((!ingredient.Found && !found) || (ingredient.Found && found))"
+											v-bind:style="{'text-decoration' : ingredient.Found ? 'line-through' : 'none'}" 
 										> 
-											<button 
-												type="button" 
-												v-on:click="ingredient.Found = !ingredient.Found"
-												v-bind:class="[btnRounded, btnBlue, btnDisabled]"
-											> 
-											{{ found ? '+' : 'x' }} 
 											</button>
+											<input 
+												type="checkbox"
+												v-model="ingredient.Found" 
+												v-bind:class="checkBox"
+											>
 											<!-- recipe ingredient information -->
 											{{ 
 												`
@@ -295,8 +272,8 @@
 				</div>
 				
 				<!-- steps list -->
-				<div v-if="selectedRecipe.hasOwnProperty('recipe_steps')" v-bind:class="roundedBox">
-					<h4 class="font-bold"> Steps: </h4>
+				<div v-if="selectedRecipe.hasOwnProperty('recipe_steps')">
+					<h4 v-bind:class="captionText"> Steps: </h4>
 					<ol v-bind:class="orderedList">
 						<!-- single step -->
 						<li v-for="step in selectedRecipe.recipe_steps">
@@ -313,7 +290,16 @@
 							{{ step.description }}
 						</li>
 						<!-- optional step to create -->
-						<li v-if="editMode || createMode" v-bind:class="[roundedBox, 'flex flex-col items-end']">
+						<li v-if="editMode || createMode" class="marker:text-white/50">
+							<!-- add step button -->
+							<button 
+								type="button" 
+								v-bind:disabled="!recipeStepDescription" 
+								v-on:click="addRecipeStep"
+								v-bind:class="[btnRounded, btnGreen, btnDisabled, 'my-2']"
+							> 
+								Add new step
+							</button>
 							<!-- provide step description -->
 							<input 
 								type="text" 
@@ -321,17 +307,8 @@
 								id="recipestepdescription" 
 								v-model="recipeStepDescription"
 								placeholder="Enter description"
-								v-bind:class="textInput"
+								v-bind:class="dropDown"
 							>
-							<!-- add step button -->
-							<button 
-								type="button" 
-								v-bind:disabled="recipeStepDescription == null" 
-								v-on:click="addRecipeStep"
-								v-bind:class="[btnRounded, btnGreen, btnDisabled]"
-							> 
-								Add step
-							</button>
 						</li>
 					</ol>
 				</div>

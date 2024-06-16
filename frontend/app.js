@@ -3,7 +3,6 @@ const app = Vue.createApp({
         return {
             // shopping list
             shoppingListCategories: [],
-            isShoppingListVisible: false,
             // drop-down lists
             // units
             units: [],
@@ -34,15 +33,15 @@ const app = Vue.createApp({
             // styling
             // buttons
             btnRounded: 'font-bold py-3 px-4 border-2 border-black rounded shadow',
-            btnBlue: 'bg-blue-500 hover:bg-blue-400 text-white',
-            btnRose: 'bg-rose-500 hover:bg-rose-400 text-white',
-            btnGreen: 'bg-green-500 hover:bg-green-400 text-white',
+            btnBlue: 'bg-blue-500 hover:bg-blue-400',
+            btnRose: 'bg-rose-500 hover:bg-rose-400',
+            btnGreen: 'bg-green-500 hover:bg-green-400',
             btnDisabled: 'disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none',
-            // containers
-            roundedBox: 'px-10 py-3 my-4 text-white bg-cyan-500 rounded-3xl border border-blue-500',
             // forms
-            dropDown: "py-3 px-4 rounded border border-black text-black w-full",
-            textInput: "py-3 px-4 rounded border border-black text-black w-full"
+            dropDown: "py-3 px-4 rounded border border-black text-black w-full my-2",
+            checkBox: "accent-cyan-500 w-6 h-6 rounded-lg mx-2",
+            // other
+            captionText: "font-bold text-xl"
         }
     },
     computed: {
@@ -71,7 +70,7 @@ const app = Vue.createApp({
         isIngredientToAddReady() {
             if(this.selectedFoodItem != null 
                 && this.selectedUnit != null 
-                && this.amount != null) {
+                && this.amount) {
                 return true;
             }
             return false;
@@ -83,7 +82,7 @@ const app = Vue.createApp({
                 return "list-decimal list-inside";
             }
             else {
-                return "list-none";
+                return "list-decimal list-inside";
             }
         },
         unorderedList() {
@@ -91,7 +90,7 @@ const app = Vue.createApp({
                 return "list-disc list-inside";
             }
             else {
-                return "list-none";
+                return "list-disc list-inside";
             }
         }
     },
@@ -259,7 +258,6 @@ const app = Vue.createApp({
         // stop edit mode and hide shopping list
         stopEditMode() {
             this.editMode = false;
-            this.isShoppingListVisible = false;
         },
         // create mode functions	
         // save new recipe
@@ -388,11 +386,7 @@ const app = Vue.createApp({
             this.selectedRecipe.recipe_steps
                 .forEach((element, index) => element.number = index);
         },
-        // additional tools	
-        // change shopping list visibility
-        toggleShoppingList() {
-            this.isShoppingListVisible = !this.isShoppingListVisible
-        },
+        // forms validation
         // time must be integer
         blockNonIntegerKeys(evt) {
             let nonIntegerPattern = /[^0-9]/g;
