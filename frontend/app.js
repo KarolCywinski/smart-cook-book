@@ -39,7 +39,7 @@ const app = Vue.createApp({
             btnDisabled: 'disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none',
             // forms
             dropDown: "py-3 px-4 rounded border border-black text-black w-full my-2",
-            checkBox: "accent-cyan-500 w-6 h-6 rounded-lg mx-2",
+            checkBox: "accent-teal-300 w-6 h-6 rounded-lg mx-2",
             // other
             captionText: "font-bold text-xl"
         }
