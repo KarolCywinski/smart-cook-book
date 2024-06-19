@@ -15,8 +15,15 @@ With just a few clicks, users can effortlessly create and modify recipes. The ap
   - Tailwind CSS (CDN)
   - Axios (CDN)
 ## How to run it :man_technologist:
-1. Verify your internet connectivity, as the application uses Content Delivery Network (CDN) on the frontend :globe_with_meridians:
-2. Navigate to the *backend* directory where all the python files are kept and where your *venv* folder should be, assuming you're working with virtual environments: `cd ./backend`
-3. Install all the required python packages before the first run: `pip install -r requirements.txt`
-4. Run the backend server: `uvicorn main:app --reload`
-5. Open: http://127.0.0.1:8000/smart-cook-book
+### Using Python virtual environment :snake: :desert_island:
+1. Install Python and verify your internet connectivity, as the application uses Content Delivery Network (CDN) on the frontend :earth_asia:
+2. Navigate to the *backend* directory where all the python files are kept: `cd ./backend`
+3. Create a virtual environment: `python -m venv venv`
+4. Activate the virtual environment from the console or if you are using VS Code, select the proper Python interpreter from the created *venv* directory :rocket:
+5. Install all the required python packages before the first run: `pip install -r requirements.txt`
+6. Run the backend server: `uvicorn main:app --reload`
+7. Open: http://127.0.0.1:8000/smart-cook-book
+### Using Docker :whale2: :ocean:
+1. Install Docker and verify your internet connectivity, as the application uses Content Delivery Network (CDN) on the frontend :earth_americas:
+2. Build the image and run the container defined in the *docker-compose.yml* file: `docker-compose up`
+3. Open: http://127.0.0.1:8000/smart-cook-book
