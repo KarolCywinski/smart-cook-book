@@ -1,0 +1,10 @@
+backend/venv/
+backend/__pycache__/
+backend/cookbook.db
+.git/
+.gitignore
+README.md
+LICENSE
+Dockerfile
+.dockerignore
+docker-compose.yml
