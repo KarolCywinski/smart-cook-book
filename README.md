@@ -1,4 +1,5 @@
 # Smart Cook Book :plate_with_cutlery:
+![smart-cook-book](https://github.com/KarolCywinski/smart-cook-book/assets/167247117/627418ed-cffd-4206-8116-d4cfc389d6e1)
 ## What is it :thinking:
 This is a website application designed for easy recipe management.
 
