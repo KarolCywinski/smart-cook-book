@@ -109,6 +109,11 @@ const app = Vue.createApp({
             if(val != null && val.hasOwnProperty('recipe_ingredients') && !(this.createMode)) {
                 this.getRecipeIngredients();
             }
+
+            // sort recipe steps by step number
+            if(val != null && val.hasOwnProperty('recipe_steps')) {
+                val.recipe_steps.sort((a, b) => a.number - b.number);
+            }
             this.stopEditMode();
         },
         // deselect current recipe after fetching new recipe list
